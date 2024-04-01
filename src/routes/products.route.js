@@ -1,17 +1,31 @@
 const { Router } = require('express');
 const logger = require('../utils/logger');
+const { createProductsValidation } = require('../validation/products.validation');
 
 const ProductsRouter = Router();
 
 ProductsRouter.get('/', (req, res) => {
   logger.info('GET product data');
-  res.status(200).send({ status: res.statusCode, data: [{ id: 1, nama: 'Bakso', harga: 10000 }] });
+  res.status(200).send({
+    status: res.statusCode,
+    data: [{ id: 1, nama: 'Bakso', harga: 10000, keterangan: '', status: 'tersedia' }]
+  });
 });
 
 ProductsRouter.post('/', (req, res) => {
-  logger.info('Success POST product data');
+  const { error } = createProductsValidation(req.body);
 
-  res.status(200).send({ status: res.statusCode, data: req.body });
+  // error handling post data
+  if (error) {
+    const errorMessage = error.details[0].message;
+
+    logger.error(`Error POST product data : ${errorMessage}`);
+    return res.status(400).send({ status: res.statusCode, message: errorMessage, data: {} });
+  }
+
+  // Success post data
+  logger.info('Success POST product data');
+  res.status(200).send({ status: res.statusCode, message: 'Berhasil Menambahkan Data', data: req.body });
 });
 
 module.exports = { ProductsRouter };
