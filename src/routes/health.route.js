@@ -5,7 +5,7 @@ const HealthRouter = Router();
 
 HealthRouter.get('/', (req, res) => {
   logger.info('GET health data');
-  res.status(200).send({ status: res.statusCode, data: 'health datas' });
+  res.status(200).send({ status: 'Success', statusCode: res.statusCode, data: 'health datas' });
 });
 
 module.exports = { HealthRouter };

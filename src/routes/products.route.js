@@ -20,12 +20,14 @@ ProductsRouter.post('/', (req, res) => {
     const errorMessage = error.details[0].message;
 
     logger.error(`Error POST product data : ${errorMessage}`);
-    return res.status(400).send({ status: res.statusCode, message: errorMessage, data: {} });
+    return res.status(400).send({ status: 'Bad Request', statusCode: res.statusCode, message: errorMessage, data: {} });
   }
 
   // Success post data
   logger.info('Success POST product data');
-  res.status(200).send({ status: res.statusCode, message: 'Berhasil Menambahkan Data', data: req.body });
+  res
+    .status(200)
+    .send({ status: 'Success', statusCode: res.statusCode, message: 'Berhasil Menambahkan Data', data: req.body });
 });
 
 module.exports = { ProductsRouter };
