@@ -1,10 +1,10 @@
-const express = require('express')
+const express = require('express');
+const routes = require('./routes');
 
-const app = express()
-const port = 4000
+const app = express();
+const port = 4000;
 
-app.use('/', (req, res) => {
-  res.status(200).send({ status: res.statusCode, data: 'hello world' })
-})
+console.log({ routes });
+routes(app);
 
-app.listen(port, () => console.log(`Server is listening on port ${port}`))
+app.listen(port, () => console.log(`Server is listening on port ${port}`));
