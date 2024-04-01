@@ -1,5 +1,5 @@
-const { HealthRouter } = require('./health');
-const { ProductsRouter } = require('./products');
+const { HealthRouter } = require('./health.route');
+const { ProductsRouter } = require('./products.route');
 
 const _routes = [
   ['/health', HealthRouter],
