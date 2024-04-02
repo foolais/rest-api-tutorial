@@ -1,20 +1,6 @@
 const mongoose = require('mongoose');
+const counterModel = require('./counter.model');
 
-// Counter
-const counterSchema = new mongoose.Schema({
-  _id: {
-    type: String,
-    required: true
-  },
-  sequence_value: {
-    type: Number,
-    default: 1
-  }
-});
-
-const counterModel = mongoose.model('Counter', counterSchema);
-
-// Product
 const productsSchema = new mongoose.Schema({
   product_id: {
     type: Number,
