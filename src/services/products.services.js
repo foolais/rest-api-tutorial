@@ -25,4 +25,18 @@ const addProductToDB = async (payload) => {
   }
 };
 
-module.exports = { getProductsFromDB, getProductsById, addProductToDB };
+const updateProductById = async (id, payload) => {
+  try {
+    return await productsModel.findOneAndUpdate(
+      {
+        product_id: id
+      },
+      { $set: payload },
+      { new: true }
+    );
+  } catch (error) {
+    throw error;
+  }
+};
+
+module.exports = { getProductsFromDB, getProductsById, addProductToDB, updateProductById };

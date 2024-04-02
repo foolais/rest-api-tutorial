@@ -1,7 +1,11 @@
 const logger = require('../utils/logger');
-const { createProductsValidation } = require('../validations/products.validation');
-const { getProductsFromDB, addProductToDB, getProductsById } = require('../services/products.services');
-const { v4: uuidv4 } = require('uuid');
+const { createProductsValidation, updateProductValidation } = require('../validations/products.validation');
+const {
+  getProductsFromDB,
+  addProductToDB,
+  getProductsById,
+  updateProductById
+} = require('../services/products.services');
 
 // GET All Product
 const getProducts = async (req, res) => {
@@ -83,7 +87,7 @@ const createProducts = async (req, res) => {
     logger.info('Success POST product data');
     return res
       .status(201)
-      .send({ status: 'Success', statusCode: res.statusCode, message: 'Berhasil Menambahkan Data', data: req.body });
+      .send({ status: 'Success', statusCode: res.statusCode, message: 'Berhasil Menambahkan Data' });
   } catch (error) {
     logger.error('Error POST product data', error);
     console.log(error);
@@ -96,4 +100,35 @@ const createProducts = async (req, res) => {
   }
 };
 
-module.exports = { getProducts, createProducts };
+const updateProduct = async (req, res) => {
+  const { error, value } = updateProductValidation(req.body);
+  // error handling update data
+  if (error) {
+    const errorMessage = error.details[0].message;
+    logger.error(`Error Update product data : ${errorMessage}`);
+
+    return res.status(400).send({ status: 'Bad Request', statusCode: res.statusCode, message: errorMessage, data: {} });
+  }
+
+  try {
+    const {
+      params: { id }
+    } = req;
+
+    await updateProductById(id, value);
+
+    logger.info('Success Update product data');
+    return res.status(200).send({ status: 'Success', statusCode: res.statusCode, message: 'Berhasil Mengubah Data' });
+  } catch (error) {
+    logger.error('Error Update product data', error);
+    console.log(error);
+    return res.status(500).send({
+      status: 'Internal Server Error',
+      statusCode: res.statusCode,
+      message: 'Internal Server Error',
+      data: {}
+    });
+  }
+};
+
+module.exports = { getProducts, createProducts, updateProduct };
