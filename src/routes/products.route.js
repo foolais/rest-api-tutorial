@@ -4,7 +4,7 @@ const { getProducts, createProducts } = require('../controllers/products.control
 const ProductsRouter = Router();
 
 ProductsRouter.get('/', getProducts);
-ProductsRouter.get('/:id', getProducts);
+ProductsRouter.get('/:nama', getProducts);
 ProductsRouter.post('/', createProducts);
 
 module.exports = { ProductsRouter };

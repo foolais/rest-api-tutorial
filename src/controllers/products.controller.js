@@ -9,18 +9,18 @@ const getProducts = async (req, res) => {
 
     // get from params
     const {
-      params: { id }
+      params: { nama }
     } = req;
 
     // get single product
-    if (id) {
-      logger.info(`GET product by id ${id}`);
+    if (nama) {
+      logger.info(`GET product by nama ${nama}`);
 
-      const product = products.filter((item) => item.product_id === +id);
+      const product = products.filter((item) => item.nama.includes(nama));
 
       // jika tidak ada data yang ditemukan
       if (product.length === 0) {
-        logger.error(`Product ${id} not found`);
+        logger.error(`Product ${nama} not found`);
         const errorResponse = {
           status: 'Data Not Found',
           statusCode: res.statusCode,
@@ -30,7 +30,7 @@ const getProducts = async (req, res) => {
         return res.status(404).send(errorResponse);
       }
       // jika ada data yang ditemukan
-      logger.info(`Product ${id} found`);
+      logger.info(`Product ${nama} found`);
       const successResponse = {
         status: 'Success',
         statusCode: res.statusCode,
