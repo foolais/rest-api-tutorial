@@ -1,15 +1,22 @@
 const productsModel = require('../models/products.model');
 const logger = require('../utils/logger');
 
+// get all product data
 const getProductsFromDB = async () => {
   try {
     const data = await productsModel.find();
-    logger.info('Success GET Products');
     return data;
   } catch (error) {
-    logger.error('Error GET Products', error);
     throw error;
   }
 };
 
-module.exports = { getProductsFromDB };
+const addProductToDB = async (payload) => {
+  try {
+    return await productsModel.create(payload);
+  } catch (error) {
+    throw error;
+  }
+};
+
+module.exports = { getProductsFromDB, addProductToDB };

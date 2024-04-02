@@ -1,6 +1,7 @@
 const logger = require('../utils/logger');
 const { createProductsValidation } = require('../validations/products.validation');
-const { getProductsFromDB } = require('../services/products.services');
+const { getProductsFromDB, addProductToDB } = require('../services/products.services');
+const { v4: uuidv4 } = require('uuid');
 
 // GET All Product
 const getProducts = async (req, res) => {
@@ -41,7 +42,7 @@ const getProducts = async (req, res) => {
     }
 
     // get all from query
-    logger.info('GET product data');
+    logger.info('Success GET Products data');
     const responseData = {
       status: res.statusCode,
       data: products
@@ -59,22 +60,36 @@ const getProducts = async (req, res) => {
 };
 
 // POST new products
-const createProducts = (req, res) => {
-  const { error } = createProductsValidation(req.body);
+const createProducts = async (req, res) => {
+  req.body.product_id = uuidv4();
+  console.log('req', req.body);
+  const { error, value } = createProductsValidation(req.body);
 
   // error handling post data
   if (error) {
     const errorMessage = error.details[0].message;
-
     logger.error(`Error POST product data : ${errorMessage}`);
+
     return res.status(400).send({ status: 'Bad Request', statusCode: res.statusCode, message: errorMessage, data: {} });
   }
 
-  // Success post data
-  logger.info('Success POST product data');
-  res
-    .status(200)
-    .send({ status: 'Success', statusCode: res.statusCode, message: 'Berhasil Menambahkan Data', data: req.body });
+  try {
+    await addProductToDB(value);
+    // Success post data
+    logger.info('Success POST product data');
+    return res
+      .status(201)
+      .send({ status: 'Success', statusCode: res.statusCode, message: 'Berhasil Menambahkan Data', data: req.body });
+  } catch (error) {
+    logger.error('Error POST product data', error);
+    console.log(error);
+    return res.status(500).send({
+      status: 'Internal Server Error',
+      statusCode: res.statusCode,
+      message: 'Internal Server Error',
+      data: {}
+    });
+  }
 };
 
 module.exports = { getProducts, createProducts };
