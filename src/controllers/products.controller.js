@@ -36,12 +36,22 @@ const getProducts = async (req, res) => {
     } else {
       // get all from query
       const products = await getProductsFromDB();
-      logger.info('Success GET Products data');
-      const responseData = {
-        status: res.statusCode,
-        data: products
-      };
-      return res.status(200).send(responseData);
+      if (products.length > 0) {
+        logger.info('Success GET Products data');
+        const responseData = {
+          status: res.statusCode,
+          data: products
+        };
+        return res.status(200).send(responseData);
+      } else {
+        logger.error('Failed GET Products data');
+        const errorResponse = {
+          status: 404,
+          message: 'Data tidak ditemukan',
+          data: []
+        };
+        return res.status(404).send(errorResponse);
+      }
     }
   } catch (error) {
     logger.error('Error GET product data', error);
@@ -56,7 +66,6 @@ const getProducts = async (req, res) => {
 
 // POST new products
 const createProducts = async (req, res) => {
-  req.body.product_id = uuidv4();
   console.log('req', req.body);
   const { error, value } = createProductsValidation(req.body);
 

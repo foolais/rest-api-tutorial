@@ -1,5 +1,4 @@
 const productsModel = require('../models/products.model');
-const logger = require('../utils/logger');
 
 // get all product data
 const getProductsFromDB = async () => {
