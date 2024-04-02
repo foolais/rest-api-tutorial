@@ -1,4 +1,3 @@
-const logger = require('../utils/logger');
 const { createProductsValidation, updateProductValidation } = require('../validations/products.validation');
 const {
   getProductsFromDB,
@@ -7,6 +6,7 @@ const {
   updateProductById,
   deleteProductById
 } = require('../services/products.services');
+const { successResponse, notFoundResponse, serverErrorResponse, badRequestResponse } = require('../utils/response');
 
 // GET All Product
 const getProducts = async (req, res) => {
@@ -22,50 +22,22 @@ const getProducts = async (req, res) => {
 
       if (product) {
         // jika ada data yang ditemukan
-        logger.info(`GET product by id ${id}`);
-        return res.status(200).send({
-          status: 'Success',
-          statusCode: res.statusCode,
-          data: product
-        });
+        successResponse(200, product, 'Berhasil Mengambil Data', 'GET product by id', res);
       } else {
         // jika tidak ada data yang ditemukan
-        logger.error(`GET product by id ${id}`);
-        return res.status(404).send({
-          status: 'Data Not Found',
-          statusCode: res.statusCode,
-          message: 'Data tidak ditemukan',
-          data: {}
-        });
+        notFoundResponse(404, null, 'Data tidak ditemukan', 'GET product by id', res);
       }
     } else {
       // get all from query
       const products = await getProductsFromDB();
       if (products.length > 0) {
-        logger.info('Success GET Products data');
-        const responseData = {
-          status: res.statusCode,
-          data: products
-        };
-        return res.status(200).send(responseData);
+        successResponse(200, products, 'Berhasil Mengambil Data', 'GET All Products data', res);
       } else {
-        logger.error('Failed GET Products data');
-        const errorResponse = {
-          status: 404,
-          message: 'Data tidak ditemukan',
-          data: []
-        };
-        return res.status(404).send(errorResponse);
+        notFoundResponse(404, null, 'Data tidak ditemukan', 'GET All Products data', res);
       }
     }
   } catch (error) {
-    logger.error('Error GET product data', error);
-    return res.status(500).send({
-      status: 'Internal Server Error',
-      statusCode: res.statusCode,
-      message: 'Internal Server Error',
-      data: {}
-    });
+    serverErrorResponse(500, null, 'Internal Server Error', 'GET Products data', res);
   }
 };
 
@@ -77,27 +49,15 @@ const createProducts = async (req, res) => {
   // error handling post data
   if (error) {
     const errorMessage = error.details[0].message;
-    logger.error(`Error POST product data : ${errorMessage}`);
-
-    return res.status(400).send({ status: 'Bad Request', statusCode: res.statusCode, message: errorMessage, data: {} });
+    badRequestResponse(400, null, errorMessage, 'POST product data', res);
   }
 
   try {
     await addProductToDB(value);
     // Success post data
-    logger.info('Success POST product data');
-    return res
-      .status(201)
-      .send({ status: 'Success', statusCode: res.statusCode, message: 'Berhasil Menambahkan Data' });
+    successResponse(201, null, 'Berhasil Menambahkan Data', 'POST product data', res);
   } catch (error) {
-    logger.error('Error POST product data', error);
-    console.log(error);
-    return res.status(500).send({
-      status: 'Internal Server Error',
-      statusCode: res.statusCode,
-      message: 'Internal Server Error',
-      data: {}
-    });
+    serverErrorResponse(500, null, 'Internal Server Error', 'POST product data', res);
   }
 };
 
@@ -106,9 +66,7 @@ const updateProduct = async (req, res) => {
   // error handling update data
   if (error) {
     const errorMessage = error.details[0].message;
-    logger.error(`Error Update product data : ${errorMessage}`);
-
-    return res.status(400).send({ status: 'Bad Request', statusCode: res.statusCode, message: errorMessage, data: {} });
+    badRequestResponse(400, null, errorMessage, 'UPDATE product data', res);
   }
 
   try {
@@ -119,23 +77,12 @@ const updateProduct = async (req, res) => {
     const result = await updateProductById(id, value);
 
     if (result) {
-      logger.info('Success Update product data');
-      return res.status(200).send({ status: 'Success', statusCode: res.statusCode, message: 'Berhasil Mengubah Data' });
+      successResponse(200, null, 'Berhasil Mengubah Data', 'UPDATE product data', res);
     } else {
-      logger.error('Error Delete product data');
-      return res.status(404).send({
-        status: 'Data Not Found',
-        statusCode: res.statusCode
-      });
+      notFoundResponse(404, null, 'Data tidak ditemukan', 'UPDATE product data', res);
     }
   } catch (error) {
-    logger.error('Error Update product data', error);
-    console.log(error);
-    return res.status(500).send({
-      status: 'Internal Server Error',
-      statusCode: res.statusCode,
-      message: 'Internal Server Error'
-    });
+    serverErrorResponse(500, null, 'Internal Server Error', 'UPDATE product data', res);
   }
 };
 
@@ -147,25 +94,12 @@ const deleteProduct = async (req, res) => {
 
     const result = await deleteProductById(id);
     if (result) {
-      logger.info('Success Delete product data');
-      return res
-        .status(200)
-        .send({ status: 'Success', statusCode: res.statusCode, message: 'Berhasil Menghapus Data' });
+      successResponse(200, null, 'Berhasil Menghapus Data', 'DELETE product data', res);
     } else {
-      logger.error('Error Delete product data');
-      return res.status(404).send({
-        status: 'Data Not Found',
-        statusCode: res.statusCode
-      });
+      notFoundResponse(404, null, 'Data tidak ditemukan', 'DELETE product data', res);
     }
   } catch (error) {
-    logger.error('Error Delete product data', error);
-    console.log(error);
-    return res.status(500).send({
-      status: 'Internal Server Error',
-      statusCode: res.statusCode,
-      message: 'Internal Server Error'
-    });
+    serverErrorResponse(500, null, 'Internal Server Error', 'DELETE product data', res);
   }
 };
 
