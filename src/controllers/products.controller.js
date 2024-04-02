@@ -1,53 +1,48 @@
 const logger = require('../utils/logger');
 const { createProductsValidation } = require('../validations/products.validation');
-const { getProductsFromDB, addProductToDB } = require('../services/products.services');
+const { getProductsFromDB, addProductToDB, getProductsById } = require('../services/products.services');
 const { v4: uuidv4 } = require('uuid');
 
 // GET All Product
 const getProducts = async (req, res) => {
   try {
-    const products = await getProductsFromDB();
-
     // get from params
     const {
-      params: { nama }
+      params: { id }
     } = req;
 
     // get single product
-    if (nama) {
-      logger.info(`GET product by nama ${nama}`);
+    if (id) {
+      const product = await getProductsById(id);
 
-      const product = products.filter((item) => item.nama.includes(nama));
-
-      // jika tidak ada data yang ditemukan
-      if (product.length === 0) {
-        logger.error(`Product ${nama} not found`);
-        const errorResponse = {
+      if (product) {
+        // jika ada data yang ditemukan
+        logger.info(`GET product by id ${id}`);
+        return res.status(200).send({
+          status: 'Success',
+          statusCode: res.statusCode,
+          data: product
+        });
+      } else {
+        // jika tidak ada data yang ditemukan
+        logger.error(`GET product by id ${id}`);
+        return res.status(404).send({
           status: 'Data Not Found',
           statusCode: res.statusCode,
-          message: 'Product tidak ditemukan',
+          message: 'Data tidak ditemukan',
           data: {}
-        };
-        return res.status(404).send(errorResponse);
+        });
       }
-      // jika ada data yang ditemukan
-      logger.info(`Product ${nama} found`);
-      const successResponse = {
-        status: 'Success',
-        statusCode: res.statusCode,
-        message: 'Product ditemukan',
-        data: product
+    } else {
+      // get all from query
+      const products = await getProductsFromDB();
+      logger.info('Success GET Products data');
+      const responseData = {
+        status: res.statusCode,
+        data: products
       };
-      return res.status(200).send(successResponse);
+      return res.status(200).send(responseData);
     }
-
-    // get all from query
-    logger.info('Success GET Products data');
-    const responseData = {
-      status: res.statusCode,
-      data: products
-    };
-    return res.status(200).send(responseData);
   } catch (error) {
     logger.error('Error GET product data', error);
     return res.status(500).send({

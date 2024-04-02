@@ -4,8 +4,15 @@ const logger = require('../utils/logger');
 // get all product data
 const getProductsFromDB = async () => {
   try {
-    const data = await productsModel.find();
-    return data;
+    return await productsModel.find();
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getProductsById = async (id) => {
+  try {
+    return await productsModel.findOne({ product_id: id });
   } catch (error) {
     throw error;
   }
@@ -19,4 +26,4 @@ const addProductToDB = async (payload) => {
   }
 };
 
-module.exports = { getProductsFromDB, addProductToDB };
+module.exports = { getProductsFromDB, getProductsById, addProductToDB };
