@@ -4,7 +4,8 @@ const {
   getProductsFromDB,
   addProductToDB,
   getProductsById,
-  updateProductById
+  updateProductById,
+  deleteProductById
 } = require('../services/products.services');
 
 // GET All Product
@@ -115,20 +116,57 @@ const updateProduct = async (req, res) => {
       params: { id }
     } = req;
 
-    await updateProductById(id, value);
+    const result = await updateProductById(id, value);
 
-    logger.info('Success Update product data');
-    return res.status(200).send({ status: 'Success', statusCode: res.statusCode, message: 'Berhasil Mengubah Data' });
+    if (result) {
+      logger.info('Success Update product data');
+      return res.status(200).send({ status: 'Success', statusCode: res.statusCode, message: 'Berhasil Mengubah Data' });
+    } else {
+      logger.error('Error Delete product data');
+      return res.status(404).send({
+        status: 'Data Not Found',
+        statusCode: res.statusCode
+      });
+    }
   } catch (error) {
     logger.error('Error Update product data', error);
     console.log(error);
     return res.status(500).send({
       status: 'Internal Server Error',
       statusCode: res.statusCode,
-      message: 'Internal Server Error',
-      data: {}
+      message: 'Internal Server Error'
     });
   }
 };
 
-module.exports = { getProducts, createProducts, updateProduct };
+const deleteProduct = async (req, res) => {
+  try {
+    const {
+      params: { id }
+    } = req;
+
+    const result = await deleteProductById(id);
+    if (result) {
+      logger.info('Success Delete product data');
+      return res
+        .status(200)
+        .send({ status: 'Success', statusCode: res.statusCode, message: 'Berhasil Menghapus Data' });
+    } else {
+      logger.error('Error Delete product data');
+      return res.status(404).send({
+        status: 'Data Not Found',
+        statusCode: res.statusCode
+      });
+    }
+  } catch (error) {
+    logger.error('Error Delete product data', error);
+    console.log(error);
+    return res.status(500).send({
+      status: 'Internal Server Error',
+      statusCode: res.statusCode,
+      message: 'Internal Server Error'
+    });
+  }
+};
+
+module.exports = { getProducts, createProducts, updateProduct, deleteProduct };

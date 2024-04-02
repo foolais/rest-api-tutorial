@@ -39,4 +39,12 @@ const updateProductById = async (id, payload) => {
   }
 };
 
-module.exports = { getProductsFromDB, getProductsById, addProductToDB, updateProductById };
+const deleteProductById = async (id) => {
+  try {
+    return await productsModel.findOneAndDelete({ product_id: id });
+  } catch (error) {
+    throw error;
+  }
+};
+
+module.exports = { getProductsFromDB, getProductsById, addProductToDB, updateProductById, deleteProductById };
