@@ -4,6 +4,9 @@ const logger = require('./utils/logger');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
+// connect to MongoDB
+require('./utils/connectDB');
+
 const app = express();
 const port = 4000;
 
